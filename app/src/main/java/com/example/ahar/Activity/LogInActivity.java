@@ -16,13 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.ahar.Model.User;
 import com.example.ahar.R;
-import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -35,7 +28,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -46,13 +38,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.Arrays;
-
 
 public class LogInActivity extends AppCompatActivity {
 
     private TextInputEditText email,phone,password,popup_email;
-    private Button logInButton,forgotButton;
+    private Button logInButton,forgotButton,submit;
     private TextView signup;
     private MaterialTextView forgotpassword;
     private GoogleSignInClient googleSignInClient;
@@ -104,7 +94,7 @@ public class LogInActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                checkIfSeller();
+                                checkUserType();
                             } else {
                                 Toast.makeText(LogInActivity.this, task.getException().toString(), Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(LogInActivity.this, LogInActivity.class);
@@ -166,7 +156,7 @@ public class LogInActivity extends AppCompatActivity {
                    pushData();
                 }
                 else {
-                    updateUI(null);
+//                    updateUI(null);
                 }
             }
         };
@@ -204,22 +194,30 @@ public class LogInActivity extends AppCompatActivity {
 
     }
 
-    private void checkIfSeller() {
+    private void checkUserType() {
         FirebaseUser user = mAuth.getCurrentUser();
         Query query = databaseReference.child(user.getUid());
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.child("isUser").getValue(String.class).equals("Seller")) {
-//                        Intent intent = new Intent(LogInActivity.this, SellerActivity.class); //some changes here activity class
-//                        startActivity(intent);
-                        finish();
-                    }
-                    if (snapshot.child("isUser").getValue(String.class).equals("User")) {
-                        Intent intent = new Intent(LogInActivity.this, HomeActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
+                if (snapshot.child("isUser").getValue(String.class).equals("Rider")) {
+                    Intent intent = new Intent(LogInActivity.this, RiderHomeActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+                if (snapshot.child("isUser").getValue(String.class).equals("Restaurant")) {
+                    Intent intent = new Intent(LogInActivity.this, RestaurantHomeActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+                if (snapshot.child("isUser").getValue(String.class).equals("Volunteer")) {
+                    Intent intent = new Intent(LogInActivity.this, RiderHomeActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+                if (snapshot.child("isUser").getValue(String.class).equals("")) {
+                    updateUI(user);
+                }
             }
 
             @Override
@@ -252,7 +250,7 @@ public class LogInActivity extends AppCompatActivity {
 
         super.onStart();
         if(FirebaseAuth.getInstance().getCurrentUser()!=null){
-            checkIfSeller();
+            checkUserType();
         }
     }
 
@@ -278,26 +276,24 @@ public class LogInActivity extends AppCompatActivity {
     }
 
 
-    private void firebaseAuthWithGoogle(String idToken) {
+    private void firebaseAuthWithGoogle(String idToken){
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+                    public void onComplete(@NonNull Task<AuthResult> task){
                         if (task.isSuccessful()) {
                             if(task.getResult().getAdditionalUserInfo().isNewUser()) {
                                 pushData();
                             }else{
-                                Intent intent = new Intent(LogInActivity.this,HomeActivity.class);
-                                startActivity(intent);
-                                finish();
+                                checkUserType();
                             }
                         } else {
                             Toast.makeText(LogInActivity.this,"Login Failed"
                                     +task.getException().toString(), Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LogInActivity.this, LogInActivity.class);
                             startActivity(intent);
-                            updateUI(null);
+//                            updateUI(null);
                         }
                     }
                 });
@@ -307,15 +303,15 @@ public class LogInActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         String pname = user.getDisplayName();
         String pEmail = user.getEmail();
-        String isUser = "User";
-        User userhelp = new User(pname,pEmail,null,isUser,"","","");
+//        String isUser = "User";
+//        String isUser = sp.getSelectedItem().toString();
+        User userhelp = new User(pname,pEmail,null,"","","","");
         databaseReference.child(mAuth.getCurrentUser().getUid()).setValue(userhelp);
         updateUI(user);
-        finish();
     }
 
-    private void updateUI(FirebaseUser user) {
-        Intent intent = new Intent(LogInActivity.this,HomeActivity.class);
+    private void updateUI(FirebaseUser user){
+        Intent intent = new Intent(LogInActivity.this,checkActivity.class);
         startActivity(intent);
         finish();
     }
@@ -347,7 +343,7 @@ public class LogInActivity extends AppCompatActivity {
         });
     }
 
-    private void forgotpassword() {
+    private void forgotpassword(){
         if(popup_email.getText().toString().equals("")){
             popup_email.setError("please fill");
         }
@@ -367,5 +363,4 @@ public class LogInActivity extends AppCompatActivity {
           });
         }
     }
-
 }

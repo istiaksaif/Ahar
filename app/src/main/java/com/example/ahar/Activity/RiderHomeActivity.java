@@ -6,11 +6,11 @@ import android.os.Bundle;
 
 import com.example.ahar.R;
 
-public class HomeActivity extends AppCompatActivity {
+public class RiderHomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_rider_home);
     }
 }
