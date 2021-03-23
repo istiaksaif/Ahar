@@ -1,6 +1,7 @@
 package com.example.ahar.Activity;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -51,6 +52,7 @@ public class LogInActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
+    private ProgressDialog progressDialog;
 
 //    private CallbackManager callbackManager;
     private static final String TAG = "Authentication";
@@ -90,7 +92,7 @@ public class LogInActivity extends AppCompatActivity {
                     Toast.makeText(LogInActivity.this, "please enter password", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                    mAuth.signInWithEmailAndPassword(Email, Password).addOnCompleteListener(LogInActivity.this, new OnCompleteListener<AuthResult>() {
+                mAuth.signInWithEmailAndPassword(Email, Password).addOnCompleteListener(LogInActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
@@ -99,6 +101,7 @@ public class LogInActivity extends AppCompatActivity {
                                 Toast.makeText(LogInActivity.this, task.getException().toString(), Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(LogInActivity.this, LogInActivity.class);
                                 startActivity(intent);
+                                progressDialog.dismiss();
                                 finish();
                             }
                         }
@@ -195,6 +198,10 @@ public class LogInActivity extends AppCompatActivity {
     }
 
     private void checkUserType() {
+        progressDialog = new ProgressDialog(LogInActivity.this);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         FirebaseUser user = mAuth.getCurrentUser();
         Query query = databaseReference.child(user.getUid());
         query.addValueEventListener(new ValueEventListener() {
@@ -203,19 +210,23 @@ public class LogInActivity extends AppCompatActivity {
                 if (snapshot.child("isUser").getValue(String.class).equals("Rider")) {
                     Intent intent = new Intent(LogInActivity.this, RiderHomeActivity.class);
                     startActivity(intent);
+                    progressDialog.dismiss();
                     finish();
                 }
                 if (snapshot.child("isUser").getValue(String.class).equals("Restaurant")) {
                     Intent intent = new Intent(LogInActivity.this, RestaurantHomeActivity.class);
                     startActivity(intent);
+                    progressDialog.dismiss();
                     finish();
                 }
                 if (snapshot.child("isUser").getValue(String.class).equals("Volunteer")) {
                     Intent intent = new Intent(LogInActivity.this, RiderHomeActivity.class);
                     startActivity(intent);
+                    progressDialog.dismiss();
                     finish();
                 }
                 if (snapshot.child("isUser").getValue(String.class).equals("")) {
+                    progressDialog.dismiss();
                     updateUI(user);
                 }
             }
@@ -247,7 +258,6 @@ public class LogInActivity extends AppCompatActivity {
 //    }
     
     protected void onStart(){
-
         super.onStart();
         if(FirebaseAuth.getInstance().getCurrentUser()!=null){
             checkUserType();
@@ -300,12 +310,14 @@ public class LogInActivity extends AppCompatActivity {
     }
 
     private void pushData() {
+        progressDialog = new ProgressDialog(LogInActivity.this);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         FirebaseUser user = mAuth.getCurrentUser();
         String pname = user.getDisplayName();
         String pEmail = user.getEmail();
-//        String isUser = "User";
-//        String isUser = sp.getSelectedItem().toString();
-        User userhelp = new User(pname,pEmail,null,"","","","");
+        User userhelp = new User(pname,pEmail,null,"","","","","");
         databaseReference.child(mAuth.getCurrentUser().getUid()).setValue(userhelp);
         updateUI(user);
     }
@@ -313,6 +325,7 @@ public class LogInActivity extends AppCompatActivity {
     private void updateUI(FirebaseUser user){
         Intent intent = new Intent(LogInActivity.this,checkActivity.class);
         startActivity(intent);
+        progressDialog.dismiss();
         finish();
     }
 
@@ -348,14 +361,21 @@ public class LogInActivity extends AppCompatActivity {
             popup_email.setError("please fill");
         }
         else {
-          mAuth.sendPasswordResetEmail(popup_email.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+            progressDialog = new ProgressDialog(LogInActivity.this);
+            progressDialog.show();
+            progressDialog.setContentView(R.layout.progress_dialog);
+            progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+            mAuth.sendPasswordResetEmail(popup_email.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
               @Override
               public void onComplete(@NonNull Task<Void> task) {
                  if(task.isSuccessful()){
+                     progressDialog.dismiss();
                      Toast.makeText(LogInActivity.this, "please check your email and reset password", Toast.LENGTH_SHORT).show();
                      dialog.dismiss();
                  }
                  else{
+                     progressDialog.dismiss();
                      Toast.makeText(LogInActivity.this, "Unsuccessful"+task.getException().toString(), Toast.LENGTH_SHORT).show();
                      dialog.dismiss();
                  }

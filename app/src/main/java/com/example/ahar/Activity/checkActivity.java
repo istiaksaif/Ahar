@@ -41,6 +41,10 @@ public class checkActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseDatabase firebaseDatabase;
 
+    /**
+     * Created by Istiak Saif on 14/03/21.
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

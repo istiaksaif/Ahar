@@ -1,13 +1,15 @@
 package com.example.ahar.Model;
+/**
+ * Created by Istiak Saif on 14/03/21.
+ */
 
 public class User {
-    String name,email,phone,password,address,userID,isUser,imageUrl;
+    String name,email,phone,password,address,isUser,imageUrl,nid;
 
     public User() {
     }
 
-    public User(String name, String email, String password, String isUser, String phone, String address, String imageUrl) {
-//        this.userID = userId;
+    public User(String name, String email, String password, String isUser, String phone, String address, String imageUrl,String nid) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -15,15 +17,8 @@ public class User {
         this.phone = phone;
         this.address = address;
         this.imageUrl = imageUrl;
+        this.nid = nid;
     }
-
-//    public String getUserID() {
-//        return userID;
-//    }
-//
-//    public void setUserID(String userID) {
-//        this.userID = userID;
-//    }
 
 
     public String getIsUser() {
@@ -80,5 +75,13 @@ public class User {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getNid() {
+        return nid;
+    }
+
+    public void setNid(String nid) {
+        this.nid = nid;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.ahar.Activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -40,6 +41,7 @@ public class RegistationActivity extends AppCompatActivity {
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,27 +120,28 @@ public class RegistationActivity extends AppCompatActivity {
             return;
         }
         else if(!isVallidEmail(Email)){
-            email.setError("Envalid email");
+            email.setError("Invalid email");
             return;
         }
+        progressDialog = new ProgressDialog(RegistationActivity.this);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         firebaseAuth.createUserWithEmailAndPassword(Email,Password).addOnCompleteListener(RegistationActivity.this, new OnCompleteListener<AuthResult>() {
-//            FirebaseUser user = firebaseAuth.getCurrentUser();
-//            String uid = user.getUid();
+
             @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            User userhelp = new User(FullName,Email,null,isUser,"","","");
+                            User userhelp = new User(FullName,Email,null,isUser,"","","","");
                             databaseReference.child(firebaseAuth.getCurrentUser().getUid()).setValue(userhelp);
                             Toast.makeText(RegistationActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
-//                            Intent intent = new Intent(RegistationActivity.this, RestaurantHomeActivity.class);
-//                            startActivity(intent);
-//                            finish();
                             checkUserType();
                         } else {
                             Toast.makeText(RegistationActivity.this, "Authentication Failed "+task.getException().toString(), Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(RegistationActivity.this, RegistationActivity.class);
                             startActivity(intent);
+                            progressDialog.dismiss();
                             finish();
                         }
                     }
@@ -156,16 +159,19 @@ public class RegistationActivity extends AppCompatActivity {
                 if (snapshot.child("isUser").getValue(String.class).equals("Rider")) {
                     Intent intent = new Intent(RegistationActivity.this, RiderHomeActivity.class); //some changes here activity class
                     startActivity(intent);
+                    progressDialog.dismiss();
                     finish();
                 }
                 if (snapshot.child("isUser").getValue(String.class).equals("Restaurant")) {
                     Intent intent = new Intent(RegistationActivity.this, RestaurantHomeActivity.class);
                     startActivity(intent);
+                    progressDialog.dismiss();
                     finish();
                 }
                 if (snapshot.child("isUser").getValue(String.class).equals("Volunteer")) {
                     Intent intent = new Intent(RegistationActivity.this, RiderHomeActivity.class);
                     startActivity(intent);
+                    progressDialog.dismiss();
                     finish();
                 }
             }
