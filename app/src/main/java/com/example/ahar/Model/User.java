@@ -4,12 +4,12 @@ package com.example.ahar.Model;
  */
 
 public class User {
-    String name,email,phone,password,address,isUser,imageUrl,nid;
+    String name,email,phone,password,address,isUser,imageUrl,nid,userId,status;
 
     public User() {
     }
 
-    public User(String name, String email, String password, String isUser, String phone, String address, String imageUrl,String nid) {
+    public User(String name, String email, String password, String isUser, String phone, String address, String imageUrl,String nid,String userId,String status) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -18,6 +18,8 @@ public class User {
         this.address = address;
         this.imageUrl = imageUrl;
         this.nid = nid;
+        this.userId = userId;
+        this.status = status;
     }
 
 
@@ -83,5 +85,21 @@ public class User {
 
     public void setNid(String nid) {
         this.nid = nid;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

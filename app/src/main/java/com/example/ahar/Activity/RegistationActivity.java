@@ -34,7 +34,7 @@ import com.google.firebase.database.ValueEventListener;
 public class RegistationActivity extends AppCompatActivity {
 
     private TextView signin;
-    private TextInputEditText fullName,email,phone,password,passwordRepeat;
+    private TextInputEditText fullName,email,password,passwordRepeat;
     private MaterialAutoCompleteTextView autoCompleteTextView;
     private Button registrationButton;
     private FirebaseAuth firebaseAuth;
@@ -87,8 +87,6 @@ public class RegistationActivity extends AppCompatActivity {
         String Email = email.getText().toString();
         String Password = password.getText().toString();
         String Password_re = passwordRepeat.getText().toString();
-//        String uid = firebaseAuth.getCurrentUser().getUid();
-//        databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child(uid);
         String isUser = autoCompleteTextView.getText().toString();
 
         if (TextUtils.isEmpty(FullName)){
@@ -133,8 +131,9 @@ public class RegistationActivity extends AppCompatActivity {
             @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            User userhelp = new User(FullName,Email,null,isUser,"","","","");
-                            databaseReference.child(firebaseAuth.getCurrentUser().getUid()).setValue(userhelp);
+                            String uid = firebaseAuth.getCurrentUser().getUid();
+                            User userhelp = new User(FullName,Email,null,isUser,"","","","",uid,"offline");
+                            databaseReference.child(uid).setValue(userhelp);
                             Toast.makeText(RegistationActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
                             checkUserType();
                         } else {

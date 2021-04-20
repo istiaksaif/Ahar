@@ -1,12 +1,9 @@
 package com.example.ahar.Fragment;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,20 +19,23 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.example.ahar.Activity.LogInActivity;
+import com.example.ahar.Activity.RestaurantHomeActivity;
+import com.example.ahar.Activity.RiderHomeActivity;
+import com.example.ahar.utils.ImageGetHelper;
 import com.example.ahar.R;
-import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -45,7 +45,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
@@ -55,10 +54,14 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import static android.app.Activity.RESULT_OK;
-import static com.facebook.FacebookSdk.getApplicationContext;
+
+/**
+ * Created by Istiak Saif on 02/04/21.
+ */
 
 public class ProfileFragment extends Fragment {
 
+    private ImageGetHelper getImageFunction;
     private ImageView logoutButton,imageView;
     private TextView nickName,nid,fullName,email,phone,address,restaurantName;
     private DatabaseReference databaseReference;
@@ -68,19 +71,16 @@ public class ProfileFragment extends Fragment {
     private String uid = user.getUid();
     private ProgressDialog progressDialog,pro;
 
-    //permission
-    private static final int CAMERA_REQUEST_CODE=100;
-    private static final int STORAGE_REQUEST_CODE=200;
-    private static final int IMAGE_PICK_GALLERY_CODE=300;
-    private static final int IMAGE_PICK_CAMERA_CODE=400;
-    private String cameraPermission[];
-    private String storagePermission[];
     private String profilePhoto;
     private GoogleSignInClient googleSignInClient;
+
+    private Toolbar toolbar;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        getImageFunction = new ImageGetHelper(this);
 
         nickName = view.findViewById(R.id.nickname);
         logoutButton = view.findViewById(R.id.logout);
@@ -93,9 +93,6 @@ public class ProfileFragment extends Fragment {
         restaurantName = view.findViewById(R.id.restaurantname);
 
         progressDialog = new ProgressDialog(getActivity());
-        cameraPermission = new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        storagePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
 
         databaseReference = FirebaseDatabase.getInstance().getReference("users");
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -139,7 +136,7 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 progressDialog.setMessage("Update Profile Image");
                 profilePhoto = "imageUrl";
-                showImagePicDialog();
+                getImageFunction.showImagePicDialog();
             }
         });
 
@@ -197,28 +194,6 @@ public class ProfileFragment extends Fragment {
         });
 
     }
-    private boolean checkStoragePermission(){
-        boolean result = ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
-        return result;
-    }
-
-    private void requestStoragePermission(){
-        requestPermissions(storagePermission, STORAGE_REQUEST_CODE);
-    }
-
-    private boolean checkCameraPermission(){
-        boolean result = ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.CAMERA) == (PackageManager.PERMISSION_GRANTED);
-
-        boolean result1 = ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
-        return result && result1;
-    }
-
-    private void requestCameraPermission(){
-        requestPermissions(cameraPermission, CAMERA_REQUEST_CODE);
-    }
 
     private void showMoreUpdating(String key) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -270,77 +245,22 @@ public class ProfileFragment extends Fragment {
         builder.create().show();
     }
 
-    private void showImagePicDialog() {
-        String options[] = {"Camera","Gallery"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Pick Image");
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which ==0){
-                    if(!checkCameraPermission()){
-                        requestCameraPermission();
-                    }
-                    else{
-                        pickFromCamera();
-                    }
-                }
-                else if (which == 1){
-                    if(!checkStoragePermission()){
-                        requestStoragePermission();
-                    }
-                    else{
-                        pickFromGallery();
-                    }
-                }
-            }
-        });
-        builder.create().show();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
-            case CAMERA_REQUEST_CODE:{
-                if(grantResults.length>0){
-                    boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    boolean writeStorageAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
-                    if(cameraAccepted && writeStorageAccepted){
-                        pickFromCamera();
-                    }
-                    else{
-                        Toast.makeText(getActivity(),"Please camera enable",Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-            break;
-            case STORAGE_REQUEST_CODE:{
-                if(grantResults.length>0){
-                    boolean writeStorageAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
-                    if(writeStorageAccepted){
-                        pickFromGallery();
-                    }
-                    else{
-                        Toast.makeText(getActivity(),"Please enable",Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-            break;
-        }
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
-            if(requestCode == IMAGE_PICK_GALLERY_CODE){
+            if(requestCode == getImageFunction.IMAGE_PICK_GALLERY_CODE){
                 imageUri = data.getData();
                 uploadProfilePhoto(imageUri);
+                imageView.setImageURI(imageUri);
             }
-            if(requestCode == IMAGE_PICK_CAMERA_CODE){
-                uploadProfilePhoto(imageUri);
+            if(requestCode == getImageFunction.IMAGE_PICK_CAMERA_CODE){
+                try {
+                    uploadProfilePhoto(imageUri);
+                    imageView.setImageURI(imageUri);
+                }catch (Exception e){
+                   e.printStackTrace();
+                }
             }
         }
     }
@@ -404,22 +324,6 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    private void pickFromCamera() {
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, "Temp Pic");
-        values.put(MediaStore.Images.Media.DESCRIPTION, "Temp Description");
-        imageUri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
-        startActivityForResult(cameraIntent,IMAGE_PICK_CAMERA_CODE);
-    }
-
-    private void pickFromGallery() {
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK);
-        galleryIntent.setType("image/*");
-        startActivityForResult(galleryIntent,IMAGE_PICK_GALLERY_CODE);
-    }
-
     private void signOut(){
         FirebaseAuth.getInstance().signOut();
         googleSignInClient.signOut();
@@ -434,4 +338,12 @@ public class ProfileFragment extends Fragment {
         View view= inflater.inflate(R.layout.fragment_profile, container, false);
         return view;
     }
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        ((RestaurantHomeActivity)getActivity()).setToolbar(toolbar);
+//        ((RiderHomeActivity)getActivity()).setToolbar(toolbar);
+//        ((AppCompatActivity)getActivity()).getSupportActionBar().hide();
+//    }
 }
