@@ -199,6 +199,12 @@ public class LogInActivity extends AppCompatActivity {
                     progressDialog.dismiss();
                     finish();
                 }
+                if (snapshot.child("isUser").getValue(String.class).equals("AdminManager")) {
+                    Intent intent = new Intent(LogInActivity.this, AdminManagerHomeActivity.class);
+                    startActivity(intent);
+                    progressDialog.dismiss();
+                    finish();
+                }
                 if (snapshot.child("isUser").getValue(String.class).equals("")) {
                     progressDialog.dismiss();
                     updateUI(user);

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.ahar.Adaptar.UserContactAdapter;
 import com.example.ahar.Model.User;
@@ -56,6 +57,8 @@ public class ContactList extends Fragment {
                     assert firebaseUser!=null;
                     if(!user.getUserId().equals(firebaseUser.getUid())){
                         userList.add(user);
+                    }else {
+//                        Toast.makeText(getActivity(),"You hove No friends",Toast.LENGTH_SHORT).show();
                     }
                 }
                 userContactAdapter = new UserContactAdapter(getContext(),userList);
