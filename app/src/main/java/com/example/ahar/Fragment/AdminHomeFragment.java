@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.ahar.Adaptar.DonateItemAdapter;
+import com.example.ahar.Adaptar.DonateItemAdminpannelAdapter;
 import com.example.ahar.Model.DonateFoodItemList;
 import com.example.ahar.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,12 +32,11 @@ import java.util.ArrayList;
 public class AdminHomeFragment extends Fragment {
 
     private RecyclerView productRecyclerView;
-    private DonateItemAdapter donateItemAdapter;
+    private DonateItemAdminpannelAdapter donateItemAdapter;
     private ArrayList<DonateFoodItemList> donateFoodItemLists;
-    private DatabaseReference productDatabaseRef;
+    private DatabaseReference donateItemDatabaseRef;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private String uid = user.getUid();
-    private Toolbar toolbar;
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -45,72 +45,79 @@ public class AdminHomeFragment extends Fragment {
         productRecyclerView.setLayoutManager(new GridLayoutManager(getContext(),1));
         productRecyclerView.setHasFixedSize(true);
 
-        productDatabaseRef = FirebaseDatabase.getInstance().getReference();
+        donateItemDatabaseRef = FirebaseDatabase.getInstance().getReference();
         donateFoodItemLists = new ArrayList<>();
 
-        GetDataFromFirebase(null);
+        GetDataFromFirebase();
         ClearAll();
-
     }
 
-    private void GetDataFromFirebase(String resname) {
-
-        Query query = productDatabaseRef.child("donateFoodList");
+    private void GetDataFromFirebase() {
+        Query query = donateItemDatabaseRef.child("confirmDonateFoodList");
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ClearAll();
                 for(DataSnapshot  snapshot: dataSnapshot.getChildren()){
-                    DonateFoodItemList donateItem = new DonateFoodItemList();
-                    if(resname==null){
-                        String id = snapshot.child("userId").getValue().toString();
-                        getresname(id);
-                    }else{
-                        try {
-                            donateItem.setRestaurantAddress(snapshot.child("RestaurantAddress").getValue().toString());
-                            donateItem.setFoodDes(snapshot.child("FoodDescription").getValue().toString());
-                            donateItem.setApproxPrice(snapshot.child("FoodApproximatePrice").getValue().toString());
-                            donateItem.setConsumePeople(snapshot.child("ConsumePeople").getValue().toString());
-                            donateItem.setDate(snapshot.child("Date").getValue().toString());
-                            donateItem.setEndTime(snapshot.child("EndTime").getValue().toString());
-                            donateItem.setStartTime(snapshot.child("startTime").getValue().toString());
-                            donateItem.setImage(snapshot.child("image").getValue().toString());
-                            donateItem.setRestaurantName(resname);
-                            donateFoodItemLists.add(donateItem);
-                        }catch (Exception e){
+                String ss = snapshot.child("donateId").getValue().toString();
+//                Query query = donateItemDatabaseRef.child("donateFoodList").orderByChild("donateId").equalTo(ss);
+                Query query = donateItemDatabaseRef.child("donateFoodList");
+                query.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        ClearAll();
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            DonateFoodItemList donateItem = new DonateFoodItemList();
+                            try {
+                                donateItem.setRestaurantAddress(snapshot.child("RestaurantAddress").getValue().toString());
+                                donateItem.setFoodDes(snapshot.child("FoodDescription").getValue().toString());
+                                donateItem.setApproxPrice(snapshot.child("FoodApproximatePrice").getValue().toString());
+                                donateItem.setConsumePeople(snapshot.child("ConsumePeople").getValue().toString());
+                                donateItem.setDate(snapshot.child("Date").getValue().toString());
+                                donateItem.setEndTime(snapshot.child("EndTime").getValue().toString());
+                                donateItem.setStartTime(snapshot.child("startTime").getValue().toString());
+                                donateItem.setImage(snapshot.child("image").getValue().toString());
+                                donateItem.setDonateid(snapshot.child("donateId").getValue().toString());
+                                String id = snapshot.child("userId").getValue().toString();
+                                Query query = FirebaseDatabase.getInstance().getReference("users").orderByChild("userId").equalTo(id);
+                                query.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                            try {
+                                                String name = dataSnapshot.child("Restaurant Name").getValue().toString();
+                                                donateItem.setRestaurantName(name);
+                                            } catch (Exception e) {
 
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Toast.makeText(getActivity(), "Some Thing Wrong", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                donateFoodItemLists.add(donateItem);
+                            } catch (Exception e) {
+
+                            }
                         }
+                        donateItemAdapter = new DonateItemAdminpannelAdapter(getContext(), donateFoodItemLists);
+                        productRecyclerView.setAdapter(donateItemAdapter);
+                        donateItemAdapter.notifyDataSetChanged();
                     }
-                }
-                donateItemAdapter = new DonateItemAdapter(getContext(), donateFoodItemLists);
-                productRecyclerView.setAdapter(donateItemAdapter);
-                donateItemAdapter.notifyDataSetChanged();
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
-    }
-
-    private void getresname(String id){
-        Query query = FirebaseDatabase.getInstance().getReference("users").orderByChild("userId").equalTo(id);
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot dataSnapshot:snapshot.getChildren()) {
-                    try {
-                        String name = dataSnapshot.child("Restaurant Name").getValue().toString();
-                        GetDataFromFirebase(name);
-                    }catch (Exception e){
-
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getActivity(),"Some Thing Wrong",Toast.LENGTH_SHORT).show();
             }
         });
     }

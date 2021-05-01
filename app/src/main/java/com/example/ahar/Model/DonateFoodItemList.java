@@ -1,12 +1,12 @@
 package com.example.ahar.Model;
 
 public class DonateFoodItemList {
-    private String image,restaurantName,foodDes,startTime,endTime,date,consumePeople,restaurantAddress,approxPrice;
+    private String image,restaurantName,foodDes,startTime,endTime,date,consumePeople,restaurantAddress,approxPrice,donateid;
 
     public DonateFoodItemList() {
     }
 
-    public DonateFoodItemList(String image, String restaurantName, String foodDes, String startTime, String endTime, String date, String consumePeople, String restaurantAddress, String approxPrice) {
+    public DonateFoodItemList(String image, String restaurantName, String foodDes, String startTime, String endTime, String date, String consumePeople, String restaurantAddress, String approxPrice,String donateid) {
         this.image = image;
         this.restaurantName = restaurantName;
         this.foodDes = foodDes;
@@ -16,6 +16,7 @@ public class DonateFoodItemList {
         this.consumePeople = consumePeople;
         this.restaurantAddress = restaurantAddress;
         this.approxPrice = approxPrice;
+        this.donateid = donateid;
     }
 
     public String getImage() {
@@ -88,5 +89,13 @@ public class DonateFoodItemList {
 
     public void setApproxPrice(String approxPrice) {
         this.approxPrice = approxPrice;
+    }
+
+    public String getDonateid() {
+        return donateid;
+    }
+
+    public void setDonateid(String donateid) {
+        this.donateid = donateid;
     }
 }

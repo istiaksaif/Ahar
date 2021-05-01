@@ -73,7 +73,7 @@ public class RestaurantHomeActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 //        checkStatus("online");
-        doOnline();
+//        doOnline();
 //        Toast.makeText(RestaurantHomeActivity.this, "resume", Toast.LENGTH_SHORT).show();
     }
     @Override

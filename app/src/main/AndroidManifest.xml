@@ -32,12 +32,12 @@
             android:name=".Activity.RestaurantHomeActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Ahar"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.RegistationActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Ahar"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".Activity.LogInActivity"
             android:screenOrientation="portrait"

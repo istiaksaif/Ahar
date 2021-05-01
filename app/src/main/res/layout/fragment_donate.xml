@@ -6,11 +6,11 @@
     android:layout_height="match_parent"
     android:background="@color/white_redis"
     tools:context=".Fragment.DonateFragment">
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:layout_marginBottom="40dp">
         <androidx.core.widget.NestedScrollView
             android:fillViewport="true"
             android:layout_width="match_parent"
@@ -168,12 +168,20 @@
                     android:scaleType="center"
                     android:background="@color/white_redis"
                     android:src="@drawable/ic_add_image"/>
-                <Button
-                    android:id="@+id/productaddbutton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Donate Food"/>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
-    </LinearLayout>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:paddingRight="20dp"
+        android:paddingLeft="20dp"
+        android:background="@color/white">
+        <Button
+            android:id="@+id/productaddbutton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Donate Food"/>
+    </RelativeLayout>
 </FrameLayout>
