@@ -28,7 +28,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-
+/**
+ * Created by Istiak Saif on 27/04/21.
+ */
 public class AdminHomeFragment extends Fragment {
 
     private RecyclerView productRecyclerView;
@@ -53,13 +55,16 @@ public class AdminHomeFragment extends Fragment {
     }
 
     private void GetDataFromFirebase() {
-        Query query = donateItemDatabaseRef.child("confirmDonateFoodList");
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot  snapshot: dataSnapshot.getChildren()){
-                String ss = snapshot.child("donateId").getValue().toString();
+//        Query query = donateItemDatabaseRef.child("confirmDonateFoodList");
+//        query.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                for(DataSnapshot  snapshot: dataSnapshot.getChildren()){
+//                String ss = snapshot.child("donateId").getValue().toString();
 //                Query query = donateItemDatabaseRef.child("donateFoodList").orderByChild("donateId").equalTo(ss);
+//                    if (dataSnapshot.child("donateId").equals(ss)) {
+//                        donateFoodItemLists.remove(donateItem);
+//                    }
                 Query query = donateItemDatabaseRef.child("donateFoodList");
                 query.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -113,14 +118,14 @@ public class AdminHomeFragment extends Fragment {
                     }
                 });
             }
-            }
+//            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+//    }
 
     private void ClearAll(){
         if (donateFoodItemLists !=null){

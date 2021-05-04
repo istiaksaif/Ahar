@@ -37,7 +37,7 @@ public class RiderHomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rider_home);
+        setContentView(R.layout.activity_common_home);
 
         tabLayout = (TabLayout)findViewById(R.id.tab);
         tabviewPager = (ViewPager)findViewById(R.id.tabviewpager);

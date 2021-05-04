@@ -49,7 +49,7 @@ public class RestaurantHomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_restaurant_home);
+        setContentView(R.layout.activity_common_home);
 
         int displayWidth = getWindowManager().getDefaultDisplay().getHeight();
 

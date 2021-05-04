@@ -13,7 +13,6 @@ import com.example.ahar.Adaptar.TabViewPagerAdapter;
 import com.example.ahar.Fragment.AdminHomeFragment;
 import com.example.ahar.Fragment.ChatFragment;
 import com.example.ahar.Fragment.ProfileFragment;
-import com.example.ahar.Fragment.RiderHomeFragment;
 import com.example.ahar.R;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
@@ -36,7 +35,7 @@ public class AdminManagerHomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_manager_home);
+        setContentView(R.layout.activity_common_home);
 
         tabLayout = (TabLayout)findViewById(R.id.tab);
         tabviewPager = (ViewPager)findViewById(R.id.tabviewpager);
