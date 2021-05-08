@@ -56,6 +56,10 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
+/**
+ * Created by Istiak Saif on 02/04/21.
+ */
+
 public class DonateFragment extends Fragment {
     private TextInputLayout restaurantAddress,foodprice,consumePeople,fooddescription;
     private TextView startTimeStore;
@@ -207,7 +211,7 @@ public class DonateFragment extends Fragment {
         String currentTime = sdf.format(new Date());
         String currentDate = DateFormat.getDateInstance(DateFormat.SHORT).format(Calendar.getInstance().getTime());
 
-        String donateid = uid+"_"+DonateID;
+//        String donateid = uid+"_"+DonateID;
 
         HashMap<String, Object> result = new HashMap<>();
         result.put("FoodDescription", FoodDescription);
@@ -219,33 +223,25 @@ public class DonateFragment extends Fragment {
         result.put("EndTime",EndTime);
         result.put("donateId", DonateID);
         result.put("userId", uid);
+        result.put("status", "");
         final StorageReference fileRef = storageReference.child(System.currentTimeMillis() + "." + getActivity().getContentResolver());
-        databaseReference.child(donateid).updateChildren(result).addOnSuccessListener(new OnSuccessListener<Void>() {
+        databaseReference.child(DonateID).updateChildren(result).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 if(uri == null){
-                    Uri imguri = Uri.parse("photo_1.jpeg");
-                    fileRef.putFile(imguri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    Uri imguri = Uri.parse("https://firebasestorage.googleapis.com/v0/b/ahar-project-299.appspot.com/o/1620468386134.android.app.ContextImpl%24ApplicationContentResolver%401e3dbf7f?alt=media&token=5eeb261a-2cfd-4215-a929-332e497ad1bb");
+                    HashMap<String, Object> resultimg = new HashMap<>();
+                    resultimg.put("image", imguri.toString());
+                    databaseReference.child(DonateID).updateChildren(resultimg).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    HashMap<String, Object> resultimg = new HashMap<>();
-                                    resultimg.put("image", imguri.toString());
-                                    databaseReference.child(donateid).updateChildren(resultimg).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            intent();
-                                            Toast.makeText(getActivity(), "Donate Successful", Toast.LENGTH_SHORT).show();
-                                            pro.dismiss();
-                                        }
-                                    });
-                                }
-                            });
+                        public void onSuccess(Void aVoid) {
+                            intent();
+                            Toast.makeText(getActivity(), "Donate Successful", Toast.LENGTH_SHORT).show();
+                            pro.dismiss();
                         }
                     });
-                }else if(uri != null){
+                }else
+                    if(uri != null){
                     fileRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -254,7 +250,7 @@ public class DonateFragment extends Fragment {
                                 public void onSuccess(Uri uri) {
                                     HashMap<String, Object> resultimg = new HashMap<>();
                                         resultimg.put("image", uri.toString());
-                                    databaseReference.child(donateid).updateChildren(resultimg).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    databaseReference.child(DonateID).updateChildren(resultimg).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
                                             intent();

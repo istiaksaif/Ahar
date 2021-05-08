@@ -27,12 +27,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+/**
+ * Created by Istiak Saif on 06/05/21.
+ */
 public class DonateItemRiderpannelAdapter extends RecyclerView.Adapter<DonateItemRiderpannelAdapter.ViewHolder> {
     private static final String Tag = "RecyclerView";
     private Context context;
     private ArrayList<DonateFoodItemList> mdata;
-    private DatabaseReference databaseReference;
+    private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();;
     private String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
     private String DonateID;
 
@@ -60,19 +62,29 @@ public class DonateItemRiderpannelAdapter extends RecyclerView.Adapter<DonateIte
         holder.stattime.setText("StartTime: "+mdata.get(position).getStartTime());
         holder.endtime.setText("EndTime: "+mdata.get(position).getEndTime());
         holder.itemconpeople.setText("Approximate "+mdata.get(position).getConsumePeople()+" people eat foods");
-        holder.itemDeliveryAddress.setText(mdata.get(position).getDeliveryAddress());
+        holder.itemDeliveryAddress.setText("Delivery Address: "+mdata.get(position).getDeliveryAddress());
         Glide.with(context).load(mdata.get(position).getImage()).placeholder(R.drawable.dropdown).into(holder.itemImage);
 
-//        holder.confirmDonate.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String ss = mdata.get(position).getDonateid();
-//                String des = holder.itemDeliveryAddress.getText().toString().trim();
-//                DonateID = ss;
-//                String donateid = uid+"_"+DonateID;
-//
-//            }
-//        });
+        if(mdata.get(position).getStatus().equals("pending")){
+            holder.confirmDonate.setVisibility(View.VISIBLE);
+            holder.bookedDonate.setVisibility(View.GONE);
+            holder.confirmDonate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    HashMap<String, Object> result = new HashMap<>();
+                    result.put("status","booked");
+
+                    databaseReference.child("donateFoodList").child(mdata.get(position).getDonateid()).updateChildren(result);
+                    holder.confirmDonate.setVisibility(View.GONE);
+                    holder.bookedDonate.setVisibility(View.VISIBLE);
+                }
+            });
+        }else if(mdata.get(position).getStatus().equals("")){
+            holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+        }else {
+            holder.confirmDonate.setVisibility(View.GONE);
+            holder.bookedDonate.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

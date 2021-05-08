@@ -20,7 +20,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
+/**
+ * Created by Istiak Saif on 26/04/21.
+ */
 public class AdminManagerHomeActivity extends AppCompatActivity {
 
     private TabLayout tabLayout;

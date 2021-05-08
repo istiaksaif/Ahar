@@ -1,7 +1,7 @@
 package com.example.ahar.Model;
 
 public class DonateFoodItemList {
-    private String image,restaurantName,foodDes,startTime,endTime,date,consumePeople,restaurantAddress,approxPrice,donateid,deliveryAddress;
+    private String image,restaurantName,foodDes,startTime,endTime,date,consumePeople,restaurantAddress,approxPrice,donateid,deliveryAddress,status;
 
     public DonateFoodItemList() {
     }
@@ -105,5 +105,13 @@ public class DonateFoodItemList {
 
     public void setDeliveryAddress(String deliveryAddress) {
         this.deliveryAddress = deliveryAddress;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

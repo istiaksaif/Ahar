@@ -55,77 +55,61 @@ public class AdminHomeFragment extends Fragment {
     }
 
     private void GetDataFromFirebase() {
-//        Query query = donateItemDatabaseRef.child("confirmDonateFoodList");
-//        query.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                for(DataSnapshot  snapshot: dataSnapshot.getChildren()){
-//                String ss = snapshot.child("donateId").getValue().toString();
-//                Query query = donateItemDatabaseRef.child("donateFoodList").orderByChild("donateId").equalTo(ss);
-//                    if (dataSnapshot.child("donateId").equals(ss)) {
-//                        donateFoodItemLists.remove(donateItem);
-//                    }
-                Query query = donateItemDatabaseRef.child("donateFoodList");
-                query.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        ClearAll();
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            DonateFoodItemList donateItem = new DonateFoodItemList();
-                            try {
-                                donateItem.setRestaurantAddress(snapshot.child("RestaurantAddress").getValue().toString());
-                                donateItem.setFoodDes(snapshot.child("FoodDescription").getValue().toString());
-                                donateItem.setApproxPrice(snapshot.child("FoodApproximatePrice").getValue().toString());
-                                donateItem.setConsumePeople(snapshot.child("ConsumePeople").getValue().toString());
-                                donateItem.setDate(snapshot.child("Date").getValue().toString());
-                                donateItem.setEndTime(snapshot.child("EndTime").getValue().toString());
-                                donateItem.setStartTime(snapshot.child("startTime").getValue().toString());
-                                donateItem.setImage(snapshot.child("image").getValue().toString());
-                                donateItem.setDonateid(snapshot.child("donateId").getValue().toString());
-                                String id = snapshot.child("userId").getValue().toString();
-                                Query query = FirebaseDatabase.getInstance().getReference("users").orderByChild("userId").equalTo(id);
-                                query.addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                            try {
-                                                String name = dataSnapshot.child("Restaurant Name").getValue().toString();
-                                                donateItem.setRestaurantName(name);
-                                            } catch (Exception e) {
+        Query query = donateItemDatabaseRef.child("donateFoodList");
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ClearAll();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    DonateFoodItemList donateItem = new DonateFoodItemList();
+                    try {
+                        donateItem.setRestaurantAddress(snapshot.child("RestaurantAddress").getValue().toString());
+                        donateItem.setFoodDes(snapshot.child("FoodDescription").getValue().toString());
+                        donateItem.setApproxPrice(snapshot.child("FoodApproximatePrice").getValue().toString());
+                        donateItem.setConsumePeople(snapshot.child("ConsumePeople").getValue().toString());
+                        donateItem.setDate(snapshot.child("Date").getValue().toString());
+                        donateItem.setEndTime(snapshot.child("EndTime").getValue().toString());
+                        donateItem.setStartTime(snapshot.child("startTime").getValue().toString());
+                        donateItem.setImage(snapshot.child("image").getValue().toString());
+                        donateItem.setStatus(snapshot.child("status").getValue().toString());
+                        String donateid = snapshot.child("donateId").getValue().toString();
+                        donateItem.setDonateid(donateid);
+                        String id = snapshot.child("userId").getValue().toString();
+                        Query query = FirebaseDatabase.getInstance().getReference("users").orderByChild("userId").equalTo(id);
+                        query.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                    try {
+                                        String name = dataSnapshot.child("Restaurant Name").getValue().toString();
+                                        donateItem.setRestaurantName(name);
+                                    } catch (Exception e) {
 
-                                            }
-                                        }
                                     }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                        Toast.makeText(getActivity(), "Some Thing Wrong", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                                donateFoodItemLists.add(donateItem);
-                            } catch (Exception e) {
-
+                                }
                             }
-                        }
-                        donateItemAdapter = new DonateItemAdminpannelAdapter(getContext(), donateFoodItemLists);
-                        productRecyclerView.setAdapter(donateItemAdapter);
-                        donateItemAdapter.notifyDataSetChanged();
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(getActivity(), "Some Thing Wrong", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        donateFoodItemLists.add(donateItem);
+                    } catch (Exception e) {
 
                     }
-                });
+                }
+                donateItemAdapter = new DonateItemAdminpannelAdapter(getContext(), donateFoodItemLists);
+                productRecyclerView.setAdapter(donateItemAdapter);
+                donateItemAdapter.notifyDataSetChanged();
             }
-//            }
 
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//    }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 
     private void ClearAll(){
         if (donateFoodItemLists !=null){

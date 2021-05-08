@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.example.ahar.Adaptar.TabViewPagerAdapter;
 import com.example.ahar.Fragment.ChatFragment;
 import com.example.ahar.Fragment.DonateFragment;
+import com.example.ahar.Fragment.MapFragment;
 import com.example.ahar.Fragment.ProfileFragment;
 import com.example.ahar.Fragment.RestaurantHomeFragment;
 import com.example.ahar.Fragment.RiderHomeFragment;
@@ -43,7 +44,7 @@ public class RiderHomeActivity extends AppCompatActivity {
         tabviewPager = (ViewPager)findViewById(R.id.tabviewpager);
         TabViewPagerAdapter tabViewPagerAdapter = new TabViewPagerAdapter(getSupportFragmentManager());
         tabViewPagerAdapter.AddFragment(new RiderHomeFragment(),null);
-//        tabViewPagerAdapter.AddFragment(new DonateFragment(),"Mission");//update this line after fix our features
+        tabViewPagerAdapter.AddFragment(new MapFragment(),"Map");//update this line after fix our features
         tabViewPagerAdapter.AddFragment(new ChatFragment(),"Chat");
         tabViewPagerAdapter.AddFragment(new ProfileFragment(),"Profile");
         tabviewPager.setAdapter(tabViewPagerAdapter);

@@ -29,13 +29,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+/**
+ * Created by Istiak Saif on 06/05/21.
+ */
 public class DonateItemAdminpannelAdapter extends RecyclerView.Adapter<DonateItemAdminpannelAdapter.ViewHolder> {
     private static final String Tag = "RecyclerView";
     private Context context;
     private ArrayList<DonateFoodItemList> mdata;
-    private DatabaseReference databaseReference;
-    private String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     private String DonateID;
 
     public DonateItemAdminpannelAdapter(Context context, ArrayList<DonateFoodItemList> mdata) {
@@ -54,6 +55,8 @@ public class DonateItemAdminpannelAdapter extends RecyclerView.Adapter<DonateIte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        DonateID = mdata.get(position).getDonateid();
+
         holder.itemDes.setText(mdata.get(position).getFoodDes());
         holder.itemPrice.setText("Approximate price "+mdata.get(position).getApproxPrice()+" tk");
         holder.resaddress.setText(mdata.get(position).getRestaurantAddress());
@@ -65,38 +68,31 @@ public class DonateItemAdminpannelAdapter extends RecyclerView.Adapter<DonateIte
 
         Glide.with(context).load(mdata.get(position).getImage()).placeholder(R.drawable.dropdown).into(holder.itemImage);
 
-        holder.confirmDonate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String ss = mdata.get(position).getDonateid();
-                String des = holder.itemDeliveryAddress.getText().toString().trim();
-                DonateID = ss;
-                String donateid = uid+"_"+DonateID;
-                databaseReference = FirebaseDatabase.getInstance().getReference("confirmDonateFoodList");
-                HashMap<String, Object> result = new HashMap<>();
-                result.put("donateId", ss);
-                result.put("deliveryAddress", des);
-                databaseReference.child(donateid).updateChildren(result).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Query query = databaseReference.child("donateFoodList").orderByChild("donateId").equalTo(ss);
-                        query.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                holder.itemView.setVisibility(View.GONE);
-                                Toast.makeText(context, "Donate Successful", Toast.LENGTH_SHORT).show();
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
-                            }
-                        });
-                    }
-                });
-            }
-        });
+        if(mdata.get(position).getStatus().equals("")) {
+            holder.confirmDonate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String des = holder.itemDeliveryAddress.getText().toString().trim();
+                    HashMap<String, Object> result = new HashMap<>();
+                    result.put("deliveryAddress", des);
+                    result.put("status", "pending");
+                    databaseReference.child("donateFoodList").child(DonateID).updateChildren(result);
+                    holder.itemDeliveryAddress.setVisibility(View.GONE);
+                    holder.confirmDonate.setVisibility(View.GONE);
+                    holder.pendingstatus.setVisibility(View.VISIBLE);
+                }
+            });
+        }else if(mdata.get(position).getStatus().equals("pending")) {
+            holder.itemDeliveryAddress.setVisibility(View.GONE);
+            holder.confirmDonate.setVisibility(View.GONE);
+            holder.pendingstatus.setVisibility(View.VISIBLE);
+        }else {
+            holder.itemDeliveryAddress.setVisibility(View.GONE);
+            holder.confirmDonate.setVisibility(View.GONE);
+            holder.pendingstatus.setVisibility(View.VISIBLE);
+        }
     }
+
 
     @Override
     public int getItemCount() {
@@ -108,7 +104,7 @@ public class DonateItemAdminpannelAdapter extends RecyclerView.Adapter<DonateIte
         ImageView itemImage;
         TextView itemDes,itemPrice,resaddress,resname,date,stattime,endtime,itemconpeople;
         EditText itemDeliveryAddress;
-        Button confirmDonate;
+        Button confirmDonate,pendingstatus;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -124,6 +120,7 @@ public class DonateItemAdminpannelAdapter extends RecyclerView.Adapter<DonateIte
 
             itemDeliveryAddress = (EditText) itemView.findViewById(R.id.deliveryaddress);
             confirmDonate = (Button) itemView.findViewById(R.id.confirmDonationButton);
+            pendingstatus = (Button) itemView.findViewById(R.id.pending);
         }
     }
 }
